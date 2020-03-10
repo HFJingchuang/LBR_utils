@@ -1,2 +1,4 @@
-# liberum-utils
-liberum utils
+# LBR_utlis
+
+### install
+npm i lbr_utlis
