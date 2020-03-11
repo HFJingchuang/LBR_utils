@@ -38,19 +38,25 @@ class Liberum {
      */
     public static getDappInfo() {
         try {
-            let admin = Liberum.tokenContract.admin();
+            let admin = Liberum.tokenContract.owner();
             let feeAccount = Liberum.tokenContract.feeAccount();
             let accountLevelsAddr = Liberum.tokenContract.accountLevelsAddr();
             let feeMake = Liberum.chain3.fromSha(Liberum.tokenContract.feeMake());
             let feeTake = Liberum.chain3.fromSha(Liberum.tokenContract.feeTake());
-            let feeRebate = Liberum.chain3.fromSha(Liberum.tokenContract.feeRebate())
+            let feeRebate = Liberum.chain3.fromSha(Liberum.tokenContract.feeRebate());
+            let pairsAddr = Liberum.tokenContract.pairsAddr();
+            let freezeToken = Liberum.tokenContract.freezeToken();
+            let freezeAmount = Liberum.chain3.fromSha(Liberum.tokenContract.freezeAmount());
             return {
                 admin: admin,
                 feeAccount: feeAccount,
                 accountLevelsAddr: accountLevelsAddr,
                 feeMake: feeMake,
                 feeTake: feeTake,
-                feeRebate: feeRebate
+                feeRebate: feeRebate,
+                pairsAddr: pairsAddr,
+                freezeToken: freezeToken,
+                freezeAmount: freezeAmount
             }
         } catch (error) {
             throw error
