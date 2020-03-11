@@ -1,4 +1,4 @@
-# LBR_utlis
+# LBR_utils
 
 ### install
-npm i lbr_utlis
+npm i lbr_utils
