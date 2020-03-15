@@ -1,7 +1,8 @@
 const BigNumber = require('bignumber.js');
+const Web3EthAbi = require('web3-eth-abi');
 
 import { dappABI, pairsABI } from './utils/ABIs';
-import { chain3Instance, getBalance, getERC20Balance } from './utils/index'
+import { chain3Instance } from './utils/index'
 import { InitConfig, Account } from "./model";
 
 
@@ -11,7 +12,6 @@ class Liberum {
     private static pairsAddr: string;
     private static subchainaddr: string;
     private static chain3: any;
-    private static scsUri: string;
     private static tokenContract: any;
     private static mcObject: any;
     private static pairsContract: any;
@@ -21,7 +21,6 @@ class Liberum {
             Liberum.vnodeVia = InitConfig.vnodeVia;
             Liberum.dappAddr = InitConfig.dappAddr;
             Liberum.pairsAddr = InitConfig.pairsAddr;
-            Liberum.scsUri = InitConfig.scsUri;
             Liberum.subchainaddr = InitConfig.subchainAddr;
             Liberum.chain3 = chain3Instance(InitConfig.vnodeUri, InitConfig.scsUri);
             Liberum.mcObject = Liberum.chain3.microchain();
@@ -226,10 +225,10 @@ class Liberum {
         try {
             let data = Liberum.chain3.sha3('balanceOf(address,address)').substr(0, 10)
                 + Liberum.chain3.encodeParams(['address', 'address'], [token, address]);
-            let res: any = await getBalance(Liberum.scsUri, Liberum.subchainaddr, Liberum.dappAddr, data)
+            let res: any = Liberum.getBalance(Liberum.subchainaddr, Liberum.dappAddr, data)
             let erc20Data = Liberum.chain3.sha3('balanceOf(address)').substr(0, 10)
                 + Liberum.chain3.encodeParams(['address'], [address]);
-            let erc20Balance = await getERC20Balance(Liberum.scsUri, Liberum.subchainaddr, token, erc20Data)
+            let erc20Balance = Liberum.getERC20Balance(Liberum.subchainaddr, token, erc20Data)
             let balance = {
                 balance: new BigNumber(res.balance).dividedBy(10 ** decimal).toString(),
                 freeze: new BigNumber(res.freeze).dividedBy(10 ** decimal).toString(),
@@ -559,6 +558,25 @@ class Liberum {
                 }
             })
         })
+    }
+
+    private static getBalance(subchainaddr: string, dappAddr: string, data: any) {
+        let result = Liberum.chain3.directCall({
+            to: subchainaddr,
+            dappAddr: dappAddr,
+            data: data
+        });
+        let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], result);
+        return { balance: res.balance, freeze: res.freeze }
+    }
+
+    private static getERC20Balance(subchainaddr: string, token: string, data: any) {
+        let result = Liberum.chain3.directCall({
+            to: subchainaddr,
+            dappAddr: token,
+            data: data
+        });
+        return Web3EthAbi.decodeParameter('uint256', result);
     }
 }
 
