@@ -565,7 +565,7 @@ class Liberum {
             to: subchainaddr,
             dappAddr: dappAddr,
             data: data,
-            from: "0xcdf5fda4cb3bde4bcb662a6c1b74f30675f75043"
+            from: "0x0000000000000000000000000000000000000000"
         });
         let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], result);
         return { balance: res.balance, freeze: res.freeze }
@@ -576,7 +576,7 @@ class Liberum {
             to: subchainaddr,
             dappAddr: token,
             data: data,
-            from: "0xcdf5fda4cb3bde4bcb662a6c1b74f30675f75043"
+            from: "0x0000000000000000000000000000000000000000"
         });
         return Web3EthAbi.decodeParameter('uint256', result);
     }
