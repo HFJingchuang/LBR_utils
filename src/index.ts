@@ -561,20 +561,22 @@ class Liberum {
     }
 
     private static getBalance(subchainaddr: string, dappAddr: string, data: any) {
-        let result = Liberum.chain3.directCall({
+        let result = Liberum.chain3.scs.directCall({
             to: subchainaddr,
             dappAddr: dappAddr,
-            data: data
+            data: data,
+            from: "0xcdf5fda4cb3bde4bcb662a6c1b74f30675f75043"
         });
         let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], result);
         return { balance: res.balance, freeze: res.freeze }
     }
 
     private static getERC20Balance(subchainaddr: string, token: string, data: any) {
-        let result = Liberum.chain3.directCall({
+        let result = Liberum.chain3.scs.directCall({
             to: subchainaddr,
             dappAddr: token,
-            data: data
+            data: data,
+            from: "0xcdf5fda4cb3bde4bcb662a6c1b74f30675f75043"
         });
         return Web3EthAbi.decodeParameter('uint256', result);
     }

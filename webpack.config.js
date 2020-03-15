@@ -2,16 +2,24 @@
 const path = require("path");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const config = {
   entry: "./src/index.ts",
   output: {
-    filename: "lbr_order_rpc.min.js",
-    path: path.resolve(__dirname, "./dist")
+    filename: "lbr_utils.min.js",
+    path: path.resolve(__dirname, "./dist"),
+    library: "lbr_utils",
+    libraryTarget: "umd"
   },
+  devtool: false,
   target: "web",
   resolve: {
-    extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+    extensions: [".js", ".ts"],
+    alias: {
+      "bignumber.js": path.resolve(__dirname, "node_modules/bignumber.js"),
+    },
+    plugins: [new TsconfigPathsPlugin({ configFile: path.resolve(__dirname, './tsconfig.json') })]
   },
   mode: "production",
   node: {
@@ -27,14 +35,12 @@ const config = {
         {
           loader: 'ts-loader',
           options: {
-            // 指定特定的ts编译配置，为了区分脚本的ts配置
-            configFile: path.resolve(__dirname, './tsconfig.json'),
             transpileOnly: true
           },
-        },
+        }
       ],
       exclude: /node_modules/,
-    },]
+    }]
   },
   plugins: [
     new CleanWebpackPlugin(),
