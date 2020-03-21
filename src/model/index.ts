@@ -2,10 +2,12 @@ export interface InitConfig {
     vnodeUri: string,
     scsUri: string,
     vnodeVia: string,
+    netWork: number,
     baseAddr: string,
     dappAddr: string,
     pairsAddr: string,
-    subchainAddr: string
+    subchainAddr: string,
+    timeOut: number
 }
 
 export interface Account {

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/HFJingchuang/LBR_utlis#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "babel-loader": "^8.0.6",
     "bignumber.js": "^9.0.0",
     "chain3": "^0.1.22",
