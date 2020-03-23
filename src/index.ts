@@ -7,23 +7,17 @@ var fetch = axios.create({ headers: { 'Content-Type': 'application/json', 'Accep
 
 const chain3 = new Chain3();
 
-// import { dappABI, pairsABI } from './utils/ABIs';
-// import { chain3Instance } from './utils/index';
-import { InitConfig, Account } from "./model";
+import { InitConfig, Account, moacCfg } from "./model";
 
 class Liberum {
-    private static vnodeVia: string;
+    private static vnodeVia: string[];
     private static dappAddr: string;
     private static pairsAddr: string;
     private static subchainaddr: string;
-    // private static chain3: any;
-    private static scsUri: string;
-    private static vnodeUri: string;
+    private static scsUri: string[];
+    private static vnodeUri: string[];
     private static netWork: number;
     private static timeOut: number;
-    // private static tokenContract: any;
-    // private static mcObject: any;
-    // private static pairsContract: any;
 
     public static async init(InitConfig: InitConfig): Promise<void> {
         new Promise<void>((reject) => {
@@ -36,130 +30,11 @@ class Liberum {
                 Liberum.netWork = InitConfig.netWork;
                 Liberum.timeOut = InitConfig.timeOut;
                 Liberum.subchainaddr = InitConfig.subchainAddr;
-                // chain3 = chain3Instance(InitConfig.vnodeUri, InitConfig.scsUri);
-                // Liberum.mcObject = chain3.microchain();
-                // Liberum.mcObject.setVnodeAddress(InitConfig.vnodeVia);
-                // Liberum.tokenContract = Liberum.mcObject.getDapp(InitConfig.subchainAddr, dappABI, InitConfig.dappAddr);
-                // Liberum.pairsContract = Liberum.mcObject.getDapp(InitConfig.subchainAddr, pairsABI, InitConfig.pairsAddr);
             } catch (error) {
                 reject(error)
             }
         })
     }
-
-    // /**
-    //  * 获取合约信息
-    //  */
-    // public static getDappInfo() {
-    //     try {
-    //         let admin = Liberum.tokenContract.owner();
-    //         let feeAccount = Liberum.tokenContract.feeAccount();
-    //         let accountLevelsAddr = Liberum.tokenContract.accountLevelsAddr();
-    //         let feeMake = chain3.fromSha(Liberum.tokenContract.feeMake());
-    //         let feeTake = chain3.fromSha(Liberum.tokenContract.feeTake());
-    //         let feeRebate = chain3.fromSha(Liberum.tokenContract.feeRebate());
-    //         let pairsAddr = Liberum.tokenContract.pairsAddr();
-    //         let freezeToken = Liberum.tokenContract.freezeToken();
-    //         let freezeAmount = chain3.fromSha(Liberum.tokenContract.freezeAmount());
-    //         return {
-    //             admin: admin,
-    //             feeAccount: feeAccount,
-    //             accountLevelsAddr: accountLevelsAddr,
-    //             feeMake: feeMake,
-    //             feeTake: feeTake,
-    //             feeRebate: feeRebate,
-    //             pairsAddr: pairsAddr,
-    //             freezeToken: freezeToken,
-    //             freezeAmount: freezeAmount
-    //         }
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  * 修改账户等级控制合约地址
-    //  * @param  {Account} baseAccount 合约部署者账户
-    //  * @param {address} accountLevelsAddr 修改账户地址
-    //  */
-    // public static async changeAccountLevelsAddr(baseAccount: Account, accountLevelsAddr: string) {
-    //     try {
-    //         let data = Liberum.dappAddr + chain3.sha3('changeAccountLevelsAddr(address)').substr(2, 8)
-    //             + chain3.encodeParams(['address'], [accountLevelsAddr]);
-    //         let res = await Liberum.sendRawTransaction(baseAccount.address, baseAccount.secret, 0, data);
-    //         return res;
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  * 修改手续费缴纳账户
-    //  * @param  {Account} baseAccount 合约部署者账户
-    //  * @param {address}  feeAccount 缴费账户
-    //  */
-    // public static async changeFeeAccount(baseAccount: Account, feeAccount: string) {
-    //     try {
-    //         if (chain3.isAddress(feeAccount)) {
-    //             let data = Liberum.dappAddr + chain3.sha3('changeFeeAccount(address)').substr(2, 8)
-    //                 + chain3.encodeParams(['address'], [feeAccount]);
-    //             let res = await Liberum.sendRawTransaction(baseAccount.address, baseAccount.secret, 0, data)
-    //             return res;
-    //         } else {
-    //             throw new Error('invalid address');
-    //         }
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  * 修改成交方手续费
-    //  * @param  {Account} baseAccount 合约部署者账户
-    //  * @param {number} feeMake 手续费
-    //  */
-    // public static async changeFeeMake(baseAccount: Account, feeMake: number) {
-    //     try {
-    //         let data = Liberum.dappAddr + chain3.sha3('changeFeeMake(uint256)').substr(2, 8)
-    //             + chain3.encodeParams(['address'], [chain3.toSha(feeMake, 'mc')]);
-    //         let res = await Liberum.sendRawTransaction(baseAccount.address, baseAccount.secret, 0, data)
-    //         return res;
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  *  修改被成交方手续费
-    //  * @param  {Account} baseAccount 合约部署者账户
-    //  * @param {number} feeTake 修改后被成交方的手续费
-    //  */
-    // public static async changeFeeTake(baseAccount: Account, feeTake: number) {
-    //     try {
-    //         let data = Liberum.dappAddr + chain3.sha3('changeFeeTake(uint256)').substr(2, 8)
-    //             + chain3.encodeParams(['address'], [chain3.toSha(feeTake, 'mc')]);
-    //         let res = await Liberum.sendRawTransaction(baseAccount.address, baseAccount.secret, 0, data)
-    //         return res;
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  * 修改回扣值
-    //  * @param  {Account} baseAccount 合约部署者账户
-    //  * @param {number} feeRebate 回扣值
-    //  */
-    // public static async changeFeeRebate(baseAccount: Account, feeRebate: number) {
-    //     try {
-    //         let data = Liberum.dappAddr + chain3.sha3('changeFeeRebate(uint256)').substr(2, 8)
-    //             + chain3.encodeParams(['address'], [chain3.toSha(feeRebate, 'mc')]);
-    //         let res = await Liberum.sendRawTransaction(baseAccount.address, baseAccount.secret, 0, data)
-    //         return res;
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
 
     /**
      * 子链原生币合约充值
@@ -268,11 +143,12 @@ class Liberum {
      */
     public static async createOrder(account: Account, tokenGet: string, amountGet: number, tokenGetDecimal: number, tokenGive: string, amountGive: number, tokenGiveDecimal: number, expires: number) {
         try {
-            let nonce = Liberum.getNonce(Liberum.subchainaddr, account.address);
-            let blockNum = chain3.scs.getBlockNumber(Liberum.subchainaddr) + expires;
+            let nonce = await Liberum.getNonce(Liberum.subchainaddr, account.address);
+            let blockNum = await Liberum.getBlockNumber(Liberum.subchainaddr);
+            let blockNumber: number = chain3.toDecimal(blockNum) + expires
             let data = Liberum.dappAddr + chain3.sha3('order(address,uint256,address,uint256,uint256,uint256)').substr(2, 8)
                 + chain3.encodeParams(['address', 'uint256', 'address', 'uint256', 'uint256', 'uint256'],
-                    [tokenGet, new BigNumber(amountGet).multipliedBy(10 ** tokenGetDecimal), tokenGive, new BigNumber(amountGive).multipliedBy(10 ** tokenGiveDecimal), blockNum, nonce]);
+                    [tokenGet, new BigNumber(amountGet).multipliedBy(10 ** tokenGetDecimal), tokenGive, new BigNumber(amountGive).multipliedBy(10 ** tokenGiveDecimal), blockNumber, nonce]);
             let res = await Liberum.sendRawTransaction(account.address, account.secret, 0, data)
             return { res, nonce, blockNum };
         } catch (error) {
@@ -280,47 +156,32 @@ class Liberum {
         }
     }
 
-    // /**
-    //  * 获取挂单余额
-    //  * @param {address} tokenGet 挂单获取token地址
-    //  * @param  {number} amountGet 挂单获取token数量
-    //  * @param { number } tokenGetDecimal 挂单获取token精度
-    //  * @param  {address} tokenGive 挂单付出token地址
-    //  * @param  {number} amountGive 挂单付出token数量
-    //  * @param { number } tokenGiveDecimal 挂单付出token精度
-    //  * @param  {address} user 挂单用户地址
-    //  * @param  {number} nonce 挂单时nonce
-    //  * @param  {number} blockNum 挂单时blockNum
-    //  */
-    // public static getAvailableVolume(tokenGet: string, amountGet: number, tokenGetDecimal: number, tokenGive: string, amountGive: number, tokenGiveDecimal: number, user: string, nonce: number, blockNum: number) {
-    //     try {
-    //         let res = Liberum.tokenContract.availableVolume(tokenGet, new BigNumber(amountGet).multipliedBy(10 ** tokenGetDecimal), tokenGive, new BigNumber(amountGive).multipliedBy(10 ** tokenGiveDecimal), blockNum, nonce, user);
-    //         return chain3.fromSha(res);
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
-
-    // /**
-    //  * 获取挂单成交额
-    //  * @param  {address} tokenGet 挂单获取token地址
-    //  * @param  {number} amountGet 挂单获取token数量
-    //  * @param { number } tokenGetDecimal 挂单获取token精度
-    //  * @param  {address} tokenGive 挂单付出token地址
-    //  * @param  {number} amountGive 挂单付出token数量
-    //  * @param { number } tokenGiveDecimal 挂单付出token精度
-    //  * @param  {address} user 挂单用户地址
-    //  * @param  {number} nonce 挂单时nonce
-    //  * @param  {number} blockNum 挂单时blockNum
-    //  */
-    // public static getAmountFilled(tokenGet: string, amountGet: number, tokenGetDecimal: number, tokenGive: string, amountGive: number, tokenGiveDecimal: number, user: string, nonce: number, blockNum: number) {
-    //     try {
-    //         let res = Liberum.tokenContract.amountFilled(tokenGet, new BigNumber(amountGet).multipliedBy(10 ** tokenGetDecimal), tokenGive, new BigNumber(amountGive).multipliedBy(10 ** tokenGiveDecimal), blockNum, nonce, user);
-    //         return chain3.fromSha(res);
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
+    /**
+     * 挂单买卖
+     * @param {Account} account 买家账户
+     * @param {address} tokenGet 买家付出的token地址
+     * @param {number} amountGet 买家付出的token数量
+     * @param {number} tokenGetDecimal token精度
+     * @param {address} tokenGive 买家获得的token地址
+     * @param {number} amountGive 买家获得的token数量
+     * @param {number} tokenGiveDecimal Token精度
+     * @param {address} user 卖家地址
+     * @param {number} amount 买家购买数量
+     * @param {number} nonce 挂单时nonce
+     * @param {number} blockNum 挂单时blockNum
+     */
+    public static async tradeOrder(account: Account, tokenGet: string, amountGet: number, tokenGetDecimal: number, tokenGive: string, amountGive: number, tokenGiveDecimal: number, user: string, amount: number, nonce: number, blockNum: number) {
+        try {
+            var data = Liberum.dappAddr + chain3.sha3('trade(address,uint256,address,uint256,uint256,uint256,address,uint256)').substr(2, 8)
+                + chain3.encodeParams(['address', 'uint256', 'address', 'uint256', 'uint256', 'uint256', 'address', 'uint256'],
+                    [tokenGet, new BigNumber(amountGet).multipliedBy(10 ** tokenGetDecimal).toString(), tokenGive, new BigNumber(amountGive).multipliedBy(10 ** tokenGiveDecimal).toString(), blockNum, nonce, user,
+                        new BigNumber(amount).multipliedBy(10 ** tokenGetDecimal).toString()]);
+            let res = await Liberum.sendRawTransaction(account.address, account.secret, 0, data)
+            return res;
+        } catch (error) {
+            throw error
+        }
+    }
 
     /**
      * 取消挂单
@@ -385,21 +246,6 @@ class Liberum {
             throw error
         }
     }
-
-    // /**
-    //  * 获取买卖类型
-    //  * @param tokenGet 获取Token地址
-    //  * @param tokenGive 付出Token地址
-    //  * @param account 操作账户
-    //  */
-    // public static async getType(tokenGet: string, tokenGive: string) {
-    //     try {
-    //         let res = Liberum.pairsContract.getType(tokenGet, tokenGive)
-    //         return res;
-    //     } catch (error) {
-    //         throw error
-    //     }
-    // }
 
     /**
      * 添加交易对
@@ -500,7 +346,8 @@ class Liberum {
      */
     public static async sendRawTransaction(from: string, secret: string, value: number, data: string) {
         try {
-            let nonce = Liberum.getNonce(Liberum.subchainaddr, from);
+            let nonce = await Liberum.getNonce(Liberum.subchainaddr, from);
+            let tmp = Liberum.getMoacCfg()
             let rawTx = {
                 from: from,
                 to: Liberum.subchainaddr,
@@ -508,33 +355,32 @@ class Liberum {
                 gasLimit: chain3.toHex("0"),
                 gasPrice: chain3.toHex("0"),
                 value: chain3.toHex(chain3.toSha(value, 'mc')),
-                chainId: chain3.toHex(chain3.version.network),
-                via: Liberum.vnodeVia,
+                chainId: chain3.toHex(Liberum.netWork),
+                via: tmp.vnodeVia,
                 shardingFlag: "0x1",
                 data: data
             };
             let signTx = chain3.signTransaction(rawTx, secret);
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
-            let response = await fetch.post(Liberum.vnodeUri, params);
+            let response = await fetch.post(tmp.vnodeUrl, params);
             let txHash = response.data.result;
             if (txHash) {
                 let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
                 let i = 0;
-                let timer: any;
-                let flag: number = Liberum.timeOut / 5000;
-                if (flag > i) {
-                    timer = setInterval(async () => {
-                        i++;
-                        let response = await fetch.post(Liberum.scsUri, params);
-                        let receipt = response.data.result;
+                while (true) {
+                    i++
+                    if (i > Liberum.timeOut) {
+                        return { "result": "error", "hash": txHash };
+                    } else {
+                        let res = await fetch.post(tmp.scsUrl, params);
+                        let receipt = res.data.result;
                         if (receipt && !receipt.failed) {
                             return { "result": "success", "hash": txHash };
                         } else if (receipt && receipt.failed) {
                             return { "result": "error", "hash": txHash };
                         }
-                    }, 5000)
-                } else {
-                    clearInterval(timer)
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 2000))
                 }
             }
         } catch (error) {
@@ -552,6 +398,7 @@ class Liberum {
     public static async approve(account: Account, to: string, tokenAdd: string, amount: number, decimal: number) {
         try {
             let nonce = await Liberum.getNonce(Liberum.subchainaddr, account.address);
+            let tmp = Liberum.getMoacCfg()
             let rawTx = {
                 from: account.address,
                 to: Liberum.subchainaddr,
@@ -559,33 +406,32 @@ class Liberum {
                 gasLimit: chain3.toHex("0"),
                 gasPrice: chain3.toHex("0"),
                 chainId: chain3.toHex(Liberum.netWork),
-                via: Liberum.vnodeVia,
+                via: tmp.vnodeVia,
                 shardingFlag: "0x1",
                 data: tokenAdd + chain3.sha3('approve(address,uint256)').substr(2, 8) +
                     chain3.encodeParams(['address', 'uint256'], [to, new BigNumber(amount).multipliedBy(10 ** decimal)])
             };
             let signTx = chain3.signTransaction(rawTx, account.secret);
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
-            let response = await fetch.post(Liberum.vnodeUri, params);
+            let response = await fetch.post(tmp.vnodeUrl, params);
             let txHash = response.data.result;
             if (txHash) {
                 let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
                 let i = 0;
-                let timer: any;
-                let flag: number = Liberum.timeOut / 5000;
-                if (flag > i) {
-                    timer = setInterval(async () => {
-                        i++;
-                        let response = await fetch.post(Liberum.scsUri, params);
-                        let receipt = response.data.result;
+                while (true) {
+                    i++
+                    if (i > Liberum.timeOut) {
+                        return { "result": "error", "hash": txHash };
+                    } else {
+                        let res = await fetch.post(tmp.scsUrl, params);
+                        let receipt = res.data.result;
                         if (receipt && !receipt.failed) {
                             return { "result": "success", "hash": txHash };
                         } else if (receipt && receipt.failed) {
                             return { "result": "error", "hash": txHash };
                         }
-                    }, 5000)
-                } else {
-                    clearInterval(timer)
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 2000))
                 }
             }
         } catch (error) {
@@ -596,7 +442,20 @@ class Liberum {
     private static async getNonce(subchainaddr: string, address: string) {
         return new Promise((resolve, reject) => {
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getNonce", "params": [subchainaddr, address], "id": 101 })
-            fetch.post(Liberum.scsUri, params).then(function (response) {
+            let tmp = Liberum.getMoacCfg()
+            fetch.post(tmp.scsUrl, params).then(function (response) {
+                resolve(response.data.result)
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    }
+
+    private static async getBlockNumber(subchainaddr: string) {
+        return new Promise((resolve, reject) => {
+            let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getBlockNumber", "params": [subchainaddr], "id": 101 })
+            let tmp = Liberum.getMoacCfg()
+            fetch.post(tmp.scsUrl, params).then(function (response) {
                 resolve(response.data.result)
             }).catch(function (error) {
                 reject(error);
@@ -607,7 +466,8 @@ class Liberum {
     private static async getBalance(subchainaddr: string, dappAddr: string, data: any) {
         return new Promise((resolve, reject) => {
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_directCall", "params": [{ "to": subchainaddr, "dappAddr": dappAddr, "data": data }], "id": 101 })
-            fetch.post(Liberum.scsUri, params).then(function (response) {
+            let tmp = Liberum.getMoacCfg();
+            fetch.post(tmp.scsUrl, params).then(function (response) {
                 let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], response.data.result);
                 resolve({ balance: res.balance, freeze: res.freeze })
             }).catch(function (error) {
@@ -619,13 +479,27 @@ class Liberum {
     private static async getERC20Balance(subchainaddr: string, token: string, data: any) {
         return new Promise((resolve, reject) => {
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_directCall", "params": [{ "to": subchainaddr, "dappAddr": token, "data": data }], "id": 101 })
-            fetch.post(Liberum.scsUri, params).then(function (response) {
+            let tmp = Liberum.getMoacCfg()
+            fetch.post(tmp.scsUrl, params).then(function (response) {
                 let res = Web3EthAbi.decodeParameter('uint256', response.data.result);
                 resolve(res);
             }).catch(function (error) {
                 reject(error);
             });
         });
+    }
+
+    private static getMoacCfg(): moacCfg {
+        let vnodeVia: string;
+        let vnodeUrl: string;
+        let scsUrl: string;
+        if (Array.isArray(Liberum.scsUri) && Liberum.scsUri.length > 0) {
+            let random: number = Math.floor(Math.random() * Liberum.scsUri.length)
+            vnodeVia = Liberum.vnodeVia[random]
+            vnodeUrl = Liberum.vnodeUri[random]
+            scsUrl = Liberum.scsUri[random];
+        }
+        return { vnodeVia: vnodeVia, vnodeUrl: vnodeUrl, scsUrl: scsUrl };
     }
 }
 

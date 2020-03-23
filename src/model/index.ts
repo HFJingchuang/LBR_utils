@@ -1,7 +1,7 @@
 export interface InitConfig {
-    vnodeUri: string,
-    scsUri: string,
-    vnodeVia: string,
+    vnodeUri: string[],
+    scsUri: string[],
+    vnodeVia: string[],
     netWork: number,
     baseAddr: string,
     dappAddr: string,
@@ -13,4 +13,10 @@ export interface InitConfig {
 export interface Account {
     address: string;
     secret: string;
+}
+
+export interface moacCfg {
+    vnodeVia: string,
+    vnodeUrl: string,
+    scsUrl: string
 }
