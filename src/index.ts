@@ -467,12 +467,14 @@ class Liberum {
         return new Promise((resolve, reject) => {
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_directCall", "params": [{ "to": subchainaddr, "dappAddr": dappAddr, "data": data }], "id": 101 })
             let tmp = Liberum.getMoacCfg();
-            fetch.post(tmp.scsUrl, params).then(function (response) {
-                let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], response.data.result);
-                resolve({ balance: res.balance, freeze: res.freeze })
-            }).catch(function (error) {
-                reject(error);
-            });
+            if (tmp.scsUrl) {
+                fetch.post(tmp.scsUrl, params).then(function (response) {
+                    let res = Web3EthAbi.decodeParameters([{ type: 'uint256', name: 'balance' }, { type: 'uint256', name: 'freeze' }], response.data.result);
+                    resolve({ balance: res.balance, freeze: res.freeze })
+                }).catch(function (error) {
+                    reject(error);
+                });
+            }
         });
     }
 
@@ -480,12 +482,14 @@ class Liberum {
         return new Promise((resolve, reject) => {
             let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_directCall", "params": [{ "to": subchainaddr, "dappAddr": token, "data": data }], "id": 101 })
             let tmp = Liberum.getMoacCfg()
-            fetch.post(tmp.scsUrl, params).then(function (response) {
-                let res = Web3EthAbi.decodeParameter('uint256', response.data.result);
-                resolve(res);
-            }).catch(function (error) {
-                reject(error);
-            });
+            if (tmp.scsUrl) {
+                fetch.post(tmp.scsUrl, params).then(function (response) {
+                    let res = Web3EthAbi.decodeParameter('uint256', response.data.result);
+                    resolve(res);
+                }).catch(function (error) {
+                    reject(error);
+                });
+            }
         });
     }
 
