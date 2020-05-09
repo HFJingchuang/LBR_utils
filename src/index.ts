@@ -345,47 +345,59 @@ class Liberum {
      * @param { number } decimal token精度
      */
     public static async sendRawTransaction(from: string, secret: string, value: number, data: string) {
-        try {
-            let nonce = await Liberum.getNonce(Liberum.subchainaddr, from);
-            let tmp = Liberum.getMoacCfg()
-            let rawTx = {
-                from: from,
-                to: Liberum.subchainaddr,
-                nonce: chain3.toHex(nonce),
-                gasLimit: chain3.toHex("0"),
-                gasPrice: chain3.toHex("0"),
-                value: chain3.toHex(chain3.toSha(value, 'mc')),
-                chainId: chain3.toHex(Liberum.netWork),
-                via: tmp.vnodeVia,
-                shardingFlag: "0x1",
-                data: data
-            };
-            let signTx = chain3.signTransaction(rawTx, secret);
-            let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
-            let response = await fetch.post(tmp.vnodeUrl, params);
-            let txHash = response.data.result;
-            if (txHash) {
-                let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
-                let i = 0;
-                while (true) {
-                    i++
-                    if (i > Liberum.timeOut) {
-                        return { "result": "error", "hash": txHash };
-                    } else {
-                        let res = await fetch.post(tmp.scsUrl, params);
-                        let receipt = res.data.result;
-                        if (receipt && !receipt.failed) {
-                            return { "result": "success", "hash": txHash };
-                        } else if (receipt && receipt.failed) {
-                            return { "result": "error", "hash": txHash };
+        return new Promise(async (resolve) => {
+            try {
+                let nonce = await Liberum.getNonce(Liberum.subchainaddr, from);
+                let tmp = Liberum.getMoacCfg()
+                let rawTx = {
+                    from: from,
+                    to: Liberum.subchainaddr,
+                    nonce: chain3.toHex(nonce),
+                    gasLimit: chain3.toHex("0"),
+                    gasPrice: chain3.toHex("0"),
+                    value: chain3.toHex(chain3.toSha(value, 'mc')),
+                    chainId: chain3.toHex(Liberum.netWork),
+                    via: tmp.vnodeVia,
+                    shardingFlag: "0x1",
+                    data: data
+                };
+                let signTx = chain3.signTransaction(rawTx, secret);
+                let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
+                let response = await fetch.post(tmp.vnodeUrl, params).catch(error => {
+                    resolve({ "result": "error", "code": error.response.status });
+                });
+                if (!response) { return }
+                let txHash = response.data.result;
+                if (txHash) {
+                    let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
+                    let i = 0;
+                    while (true) {
+                        i++
+                        if (i > Liberum.timeOut) {
+                            resolve({ "result": "error", "hash": txHash });
+                            return
+                        } else {
+                            let res = await fetch.post(tmp.scsUrl, params);
+                            let receipt = res.data.result;
+                            if (receipt && !receipt.failed) {
+                                resolve({ "result": "success", "hash": txHash });
+                                return
+                            } else if (receipt && receipt.failed) {
+                                resolve({ "result": "error", "hash": txHash });
+                                return
+                            }
                         }
+                        await new Promise(resolve => setTimeout(resolve, 2000))
                     }
-                    await new Promise(resolve => setTimeout(resolve, 2000))
+                }
+            } catch (error) {
+                if (error.response && error.response.status) {
+                    resolve({ "result": "error", "code": error.response.status });
+                } else {
+                    resolve({ "result": "error", "error": error });
                 }
             }
-        } catch (error) {
-            return { "result": "error", "error": error };
-        }
+        })
     }
 
     /**
@@ -396,47 +408,59 @@ class Liberum {
      * @param amount 数量
      */
     public static async approve(account: Account, to: string, tokenAdd: string, amount: number, decimal: number) {
-        try {
-            let nonce = await Liberum.getNonce(Liberum.subchainaddr, account.address);
-            let tmp = Liberum.getMoacCfg()
-            let rawTx = {
-                from: account.address,
-                to: Liberum.subchainaddr,
-                nonce: chain3.toHex(nonce),
-                gasLimit: chain3.toHex("0"),
-                gasPrice: chain3.toHex("0"),
-                chainId: chain3.toHex(Liberum.netWork),
-                via: tmp.vnodeVia,
-                shardingFlag: "0x1",
-                data: tokenAdd + chain3.sha3('approve(address,uint256)').substr(2, 8) +
-                    chain3.encodeParams(['address', 'uint256'], [to, new BigNumber(amount).multipliedBy(10 ** decimal)])
-            };
-            let signTx = chain3.signTransaction(rawTx, account.secret);
-            let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
-            let response = await fetch.post(tmp.vnodeUrl, params);
-            let txHash = response.data.result;
-            if (txHash) {
-                let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
-                let i = 0;
-                while (true) {
-                    i++
-                    if (i > Liberum.timeOut) {
-                        return { "result": "error", "hash": txHash };
-                    } else {
-                        let res = await fetch.post(tmp.scsUrl, params);
-                        let receipt = res.data.result;
-                        if (receipt && !receipt.failed) {
-                            return { "result": "success", "hash": txHash };
-                        } else if (receipt && receipt.failed) {
-                            return { "result": "error", "hash": txHash };
+        return new Promise(async (resolve) => {
+            try {
+                let nonce = await Liberum.getNonce(Liberum.subchainaddr, account.address);
+                let tmp = Liberum.getMoacCfg()
+                let rawTx = {
+                    from: account.address,
+                    to: Liberum.subchainaddr,
+                    nonce: chain3.toHex(nonce),
+                    gasLimit: chain3.toHex("0"),
+                    gasPrice: chain3.toHex("0"),
+                    chainId: chain3.toHex(Liberum.netWork),
+                    via: tmp.vnodeVia,
+                    shardingFlag: "0x1",
+                    data: tokenAdd + chain3.sha3('approve(address,uint256)').substr(2, 8) +
+                        chain3.encodeParams(['address', 'uint256'], [to, new BigNumber(amount).multipliedBy(10 ** decimal)])
+                };
+                let signTx = chain3.signTransaction(rawTx, account.secret);
+                let params = JSON.stringify({ "jsonrpc": "2.0", "method": "mc_sendRawTransaction", "params": [signTx], "id": 101 })
+                let response = await fetch.post(tmp.vnodeUrl, params).catch(error => {
+                    resolve({ "result": "error", "code": error.response.status });
+                });
+                if (!response) { return }
+                let txHash = response.data.result;
+                if (txHash) {
+                    let params = JSON.stringify({ "jsonrpc": "2.0", "method": "scs_getReceiptByHash", "params": [Liberum.subchainaddr, txHash], "id": 101 })
+                    let i = 0;
+                    while (true) {
+                        i++
+                        if (i > Liberum.timeOut) {
+                            resolve({ "result": "error", "hash": txHash });
+                            return
+                        } else {
+                            let res = await fetch.post(tmp.scsUrl, params);
+                            let receipt = res.data.result;
+                            if (receipt && !receipt.failed) {
+                                resolve({ "result": "success", "hash": txHash });
+                                return
+                            } else if (receipt && receipt.failed) {
+                                resolve({ "result": "error", "hash": txHash });
+                                return
+                            }
                         }
+                        await new Promise(resolve => setTimeout(resolve, 2000))
                     }
-                    await new Promise(resolve => setTimeout(resolve, 2000))
+                }
+            } catch (error) {
+                if (error.response && error.response.status) {
+                    resolve({ "result": "error", "code": error.response.status });
+                } else {
+                    resolve({ "result": "error", "error": error });
                 }
             }
-        } catch (error) {
-            return { "result": "error", "error": error };
-        }
+        })
     }
 
     private static async getNonce(subchainaddr: string, address: string) {
